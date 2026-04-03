@@ -1,16 +1,19 @@
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { 
   StyleSheet, 
   Text, 
   View, 
   TextInput, 
   TouchableOpacity, 
-  SafeAreaView,
   Alert, // Thêm thông báo
-  ActivityIndicator // Hiệu ứng xoay xoay khi đang đợi
+  ActivityIndicator, // Hiệu ứng xoay xoay khi đang đợi
+  SafeAreaView
 } from 'react-native';
 
 export default function App() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');  
   const [loading, setLoading] = useState(false); // Trạng thái chờ API
@@ -42,10 +45,18 @@ export default function App() {
 
       if (response.ok) {
         // 3. Đăng nhập thành công
-        console.log('Token nhận được:', data.token);
-        Alert.alert("Thành công", "Đã nhận được Token!");
-        
+        console.log('Token nhận được:', data.data);
+        router.replace('/(tabs)');
         // Bạn có thể lưu token vào AsyncStorage ở đây để dùng cho các trang sau
+        const storeData = async (value: string) => {
+          try {
+            await AsyncStorage.setItem('userToken', value);
+          } catch (e) {
+            console.error("Lỗi lưu token", e);
+          }
+        };
+        const token = typeof data.data === 'string' ? data.data : JSON.stringify(data.data);
+        await storeData(token);
       } else {
         // 4. Lỗi từ server (sai mật khẩu, user không tồn tại...)
         Alert.alert("Lỗi đăng nhập", data.message || "Thông tin không chính xác");
