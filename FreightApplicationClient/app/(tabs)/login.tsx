@@ -26,7 +26,7 @@ export default function App() {
 
     try {
       // 2. Gửi request đến API
-      const response = await fetch('http://localhost:8080/api/v1/login', {
+      const response = await fetch('https://freight-application-server.onrender.com/api/v1/login', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
