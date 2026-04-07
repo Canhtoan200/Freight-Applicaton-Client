@@ -1,9 +1,9 @@
 import React from "react";
 
-export default function TabsLayout() {
+export default function AdminHome() {
   return (
     <>
-      <p>Home</p>
+      <p>Đây là trang của Admin/sếp!</p>
     </>
   );
 }

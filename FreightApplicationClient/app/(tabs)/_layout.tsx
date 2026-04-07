@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'; // Thêm useEffect và useState
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, ActivityIndicator } from 'react-native';
 
-export default function RootLayout() { // Bỏ 'async' ở đây
+export default function TabsLayout() { // Bỏ 'async' ở đây
   const colorScheme = useColorScheme();
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true); // Trạng thái đang kiểm tra token
@@ -20,12 +20,29 @@ export default function RootLayout() { // Bỏ 'async' ở đây
       const jsonValue = await AsyncStorage.getItem('userToken');
       const user = jsonValue != null ? JSON.parse(jsonValue) : null;
 
-      if (user && user.data && user.data.position === 'Admin') {
-        // Nếu là Admin, chuyển thẳng vào trang admin
-        router.replace('/(admins)');
+      // Kiểm tra an toàn hơn
+      if (!user?.data?.position) {
+        router.replace('/');  // Chưa đăng nhập, tới trang login
+        return;
+      }
+
+      const position = user.data.position;
+      
+      // Dùng object mapping thay vì nhiều else if
+      const routeMap: Record<string, string> = {
+        'Admin': '/(admins)',
+        'Accountant': '/(accountants)',
+        'Partner': '/(businessPartners)',
+        'Driver': '/(drivers)',
+        'Guest': '/(guests)',
+        'QAStaff': '/(QAStaffs)'
+      };
+
+      const route = routeMap[position];
+      if (route) {
+        router.replace(route as any);
       } else {
-        // Nếu không phải admin hoặc chưa login, để họ ở trang Login (index)
-        console.log("Chưa đăng nhập hoặc không phải Admin");
+        router.replace('/');  // Position không hợp lệ, tới login
       }
     } catch (e) {
       console.error("Lỗi kiểm tra trạng thái:", e);
