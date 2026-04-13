@@ -46,8 +46,6 @@ export default function App() {
       if (response.ok) {
         // 3. Đăng nhập thành công
         console.log('Token nhận được:', data.data);
-        router.replace('/(tabs)');
-        // Bạn có thể lưu token vào AsyncStorage ở đây để dùng cho các trang sau
         const storeData = async (value: string) => {
           try {
             await AsyncStorage.setItem('userToken', value);
@@ -57,6 +55,7 @@ export default function App() {
         };
         const token = typeof data.data === 'string' ? data.data : JSON.stringify(data.data);
         await storeData(token);
+        router.replace('/(tabs)');
       } else {
         // 4. Lỗi từ server (sai mật khẩu, user không tồn tại...)
         Alert.alert("Lỗi đăng nhập", data.message || "Thông tin không chính xác");
